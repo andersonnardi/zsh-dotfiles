@@ -17,7 +17,7 @@ export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
 
 
 # asdf Laungage Version Manager
-. ~/.asdf/plugins/java/set-java-home.zsh # Java Plugin
+# . ~/.asdf/plugins/java/set-java-home.zsh # Java Plugin
 
 # C Programming & Go
 export CC='clang'

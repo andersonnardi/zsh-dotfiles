@@ -566,7 +566,8 @@ function jdk() {
   if [ -z "$1" ]
   then
     echo "Select a Java version:"
-    version=$(asdf list java | fzf --no-preview | tr -d '[:space:]')
+    # Use mise to list versions, awk to grab the version number, and fzf for selection
+    version=$(mise ls java | awk '{print $2}' | fzf --no-preview | tr -d '[:space:]')
     if [ -z "$version" ]
     then
       echo "No version selected."
@@ -576,13 +577,13 @@ function jdk() {
     version=$1
   fi
 
-  # Switch the Java version
-  asdf global java $version
+  # Switch the Java version globally
+  mise use --global java@$version
 
-  # Get the new Java home
-  export JAVA_HOME=$(asdf where java)
+  # Get the new Java home using mise where
+  export JAVA_HOME=$(mise where java@$version)
 
-  # Update the VS settings
+  # Update the VS Code settings
   sed -i '' "s|\"java.jdt.ls.java.home\": \".*\"|\"java.jdt.ls.java.home\": \"$JAVA_HOME\"|g" ~/Library/Application\ Support/Code/User/settings.json
 
   echo "JAVA_HOME: $JAVA_HOME"
@@ -600,23 +601,22 @@ function ndk() {
   # If no argument is supplied, list available versions using fzf
   if [ -z "$version" ]; then
     echo "Select a Node version:"
-    version=$(asdf list nodejs | fzf --no-preview | tr -d '[:space:]')
+    version=$(mise ls node | awk '{print $2}' | fzf --no-preview | tr -d '[:space:]')
     
-    # Check if a version was selected
     if [ -z "$version" ]; then
       echo "No version selected."
       return 1
     fi
   fi
 
-  # Switch the Node.js version
-  if ! asdf global nodejs "$version"; then
+  # Switch the Node.js version globally
+  if ! mise use --global node@"$version"; then
     echo "Error: Failed to set Node.js version"
     return 1
   fi
 
   # Get the new Node.js home
-  export NODE_HOME=$(asdf where nodejs)
+  export NODE_HOME=$(mise where node@$version)
 
   # Update VS Code settings
   local vscode_settings_file="$HOME/Library/Application Support/Code/User/settings.json"
